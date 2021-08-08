@@ -4,6 +4,7 @@ import traceback
 import pymongo
 from qaenv import mongo_ip
 import bson
+import pandas as pd
 from QIFIAccount.QAPosition import QA_Position
 from QUANTAXIS.QAARP.market_preset import MARKET_PRESET
 
@@ -204,6 +205,48 @@ class QIFI_Account():
 
     def create_fromQIFI(self, message):
         pass
+
+    def order_rule(self):
+
+        """
+        订单流控
+        """
+        pass
+
+
+    def batch_order(self, codedf:pd.Series, datetime:str, totalamount:float=1000000, model:enumerate='avg'):
+        """
+        批量调仓接口
+
+        codedf: pd.Series
+
+            Series.index -> code
+            Series.value -> price
+
+
+        totalamount: 总买入金额
+
+        model Enum
+            'avg_money': 平均市值买入
+            'avg_amount': 平均股数买入(买入总金额==totalamount)
+        """
+        if model=='avg_money':
+            moneyper = totalamount/ len(codedf)
+            amount = (moneyper/codedf).apply(lambda x: (int(100/x)*100) if int(100/x)>0 else 100)
+        elif model=='avg_amount':
+            amountx = int(totalamount/(100*codedf.sum()))
+            if amountx ==0:
+                return False
+            else:
+                amount = codedf.apply(lambda x: amountx*100)
+        orderres = pd.concat([codedf, amount], axis=1)
+        orderres.columns =['price', 'amount']
+        res = orderres.assign(datetime = datetime).apply(lambda x: self.send_order(
+                code=x.index, amount=x.amount, price=x.price, towards=1,datetime=x.datetime))
+        return res
+
+            
+
 
     def sync(self):
         self.on_sync()
@@ -581,10 +624,12 @@ class QIFI_Account():
             else:
                 self.log("开仓保证金不足 TOWARDS{} Need{} HAVE{}".format(
                     towards, moneyneed, self.available))
-
+        self.order_rule()
         return res
 
     def send_order(self, code: str, amount: float, price: float, towards: int, order_id: str = '', datetime: str = ''):
+
+
         if datetime:
             self.on_price_change(code, price, datetime)
         order_id = str(uuid.uuid4()) if order_id == '' else order_id
