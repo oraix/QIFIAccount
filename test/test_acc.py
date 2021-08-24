@@ -12,7 +12,7 @@ def test_acc():
     assert(myacc.trading_day == '')
 
     order = myacc.send_order(
-        '000001', 100, 12, ORDER_DIRECTION.BUY, datetime='2020-01-01')
+        '000001', 100, 12, ORDER_DIRECTION.BUY, datetime='2020-01-01 09:35:00')
     assert(order == {'account_cookie': 'myacc1',
                      'user_id': 'myacc1',
                      'instrument_id': '000001',
@@ -57,8 +57,8 @@ def test_acc():
     assert(myacc.get_position('stock_cn.000001').last_price == 12.0)
     assert(myacc.get_position('stock_cn.000001').open_cost_long == 1200.0)
 
-    myacc.on_price_change('000001', 13, '2020-01-01')
-    assert(myacc.datetime == '2020-01-01')
+    myacc.on_price_change('000001', 13, '2020-01-02 09:35:00')
+    assert(myacc.datetime == '2020-01-02 09:35:00')
     assert(myacc.float_profit == 100.0)
     assert(myacc.balance == 10000100.0)
     assert(myacc.get_position('000001').message == {'code': '000001',
@@ -117,7 +117,7 @@ def test_acc():
                                                     'position_profit': 100.0})
 
     order = myacc.send_order(
-        'RB2101', 1, 3800, ORDER_DIRECTION.BUY, datetime='2020-01-01')
+        'RB2101', 1, 3800, ORDER_DIRECTION.BUY, datetime='2020-01-01 11:00:00')
     assert(order == {'account_cookie': 'myacc1',
                      'user_id': 'myacc1',
                      'instrument_id': 'RB2101',
@@ -165,7 +165,7 @@ def test_acc():
                      'volume_left': 0,
                      'last_msg': '全部成交'})
     assert(list(myacc.positions.keys()) == ['stock_cn.000001', 'SHFE.RB2101'])
-    myacc.on_price_change('RB2101', 3920, '2020-01-01')
+    myacc.on_price_change('RB2101', 3920, '2020-01-01 11:00:29')
     assert(myacc.float_profit == 1300.0)
     assert(myacc.get_position('RB2101').code == 'RB2101')
     assert(myacc.get_position('RB2101').market_preset == {'name': '螺纹钢',

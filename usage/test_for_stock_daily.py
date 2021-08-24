@@ -10,7 +10,7 @@ import QIFIAccount
 # In[54]:
 
 
-acc =  QIFIAccount.QAQIFIAccount.QIFI_Account(username='ax', password='ax',model="BACKTEST")
+acc =  QIFIAccount.QAQIFIAccount.QIFI_Account(username='ax', password='ax',model="BACKTEST", nodatabase=True)
 
 
 # In[55]:
