@@ -440,7 +440,7 @@ class QA_Position():
                 res = True
             else:
                 print('BUYCLOSETODAY 今日仓位不足')
-        elif towards in ORDER_DIRECTION.SELL_CLOSE:
+        elif towards == ORDER_DIRECTION.SELL_CLOSE:
 
             if (self.volume_long - self.volume_long_frozen) >= amount:
                 self.volume_long_frozen_today += amount

@@ -557,72 +557,74 @@ class QIFI_Account():
         res = False
         qapos = self.get_position(code)
 
-        self.log(qapos.curpos)
-        self.log(qapos.close_available)
-        if towards == ORDER_DIRECTION.BUY_CLOSE:
-            # self.log("buyclose")
-            # self.log(self.volume_short - self.volume_short_frozen)
-            # self.log(amount)
-            if (qapos.volume_short - qapos.volume_short_frozen) >= amount:
-                # check
-                qapos.volume_short_frozen_today += amount
-                #qapos.volume_short_today -= amount
-                res = True
-            else:
-                self.log("BUYCLOSE 仓位不足")
+        res = qapos.order_check(amount, price, towards, order_id)
+        print('account order_check')
+        # self.log(qapos.curpos)
+        # self.log(qapos.close_available)
+        # if towards == ORDER_DIRECTION.BUY_CLOSE:
+        #     # self.log("buyclose")
+        #     # self.log(self.volume_short - self.volume_short_frozen)
+        #     # self.log(amount)
+        #     if (qapos.volume_short - qapos.volume_short_frozen) >= amount:
+        #         # check
+        #         qapos.volume_short_frozen_today += amount
+        #         #qapos.volume_short_today -= amount
+        #         res = True
+        #     else:
+        #         self.log("BUYCLOSE 仓位不足")
 
-        elif towards == ORDER_DIRECTION.BUY_CLOSETODAY:
-            if (qapos.volume_short_today - qapos.volume_short_frozen_today) >= amount:
-                qapos.volume_short_frozen_today += amount
-                #qapos.volume_short_today -= amount
-                res = True
-            else:
-                self.log("BUYCLOSETODAY 今日仓位不足")
-        elif towards in [ORDER_DIRECTION.SELL_CLOSE]:
-            # self.log("sellclose")
-            # self.log(self.volume_long - self.volume_long_frozen)
-            # self.log(amount)
-            if (qapos.volume_long - qapos.volume_long_frozen) >= amount:
-                qapos.volume_long_frozen_today += amount
-                #qapos.volume_long_today -= amount
-                res = True
-            else:
-                self.log("SELL CLOSE 仓位不足")
+        # elif towards == ORDER_DIRECTION.BUY_CLOSETODAY:
+        #     if (qapos.volume_short_today - qapos.volume_short_frozen_today) >= amount:
+        #         qapos.volume_short_frozen_today += amount
+        #         #qapos.volume_short_today -= amount
+        #         res = True
+        #     else:
+        #         self.log("BUYCLOSETODAY 今日仓位不足")
+        # elif towards in [ORDER_DIRECTION.SELL_CLOSE]:
+        #     # self.log("sellclose")
+        #     # self.log(self.volume_long - self.volume_long_frozen)
+        #     # self.log(amount)
+        #     if (qapos.volume_long - qapos.volume_long_frozen) >= amount:
+        #         qapos.volume_long_frozen_today += amount
+        #         #qapos.volume_long_today -= amount
+        #         res = True
+        #     else:
+        #         self.log("SELL CLOSE 仓位不足")
 
-        elif towards == ORDER_DIRECTION.SELL_CLOSETODAY:
-            if (qapos.volume_long_today - qapos.volume_long_frozen_today) >= amount:
-                # self.log("sellclosetoday")
-                # self.log(self.volume_long_today - self.volume_long_frozen)
-                # self.log(amount)
-                qapos.volume_long_frozen_today += amount
-                #qapos.volume_long_today -= amount
-                return True
-            else:
-                self.log("SELLCLOSETODAY 今日仓位不足")
-        elif towards in [ORDER_DIRECTION.BUY_OPEN,
-                         ORDER_DIRECTION.SELL_OPEN,
-                         ORDER_DIRECTION.BUY]:
-            """
-            冻结的保证金
-            """
-            coeff = float(price) * float(
-                self.market_preset.get_code(code).get("unit_table",
-                                                      1)
-            ) * float(self.market_preset.get_code(code).get("buy_frozen_coeff",
-                                                            1))
-            moneyneed = coeff * amount
-            if self.available > moneyneed:
-                self.money -= moneyneed
-                self.frozen[order_id] = {
-                    'amount': amount,
-                    'coeff': coeff,
-                    'money': moneyneed
-                }
-                res = True
-            else:
-                self.log("开仓保证金不足 TOWARDS{} Need{} HAVE{}".format(
-                    towards, moneyneed, self.available))
-        self.order_rule()
+        # elif towards == ORDER_DIRECTION.SELL_CLOSETODAY:
+        #     if (qapos.volume_long_today - qapos.volume_long_frozen_today) >= amount:
+        #         # self.log("sellclosetoday")
+        #         # self.log(self.volume_long_today - self.volume_long_frozen)
+        #         # self.log(amount)
+        #         qapos.volume_long_frozen_today += amount
+        #         #qapos.volume_long_today -= amount
+        #         return True
+        #     else:
+        #         self.log("SELLCLOSETODAY 今日仓位不足")
+        # elif towards in [ORDER_DIRECTION.BUY_OPEN,
+        #                  ORDER_DIRECTION.SELL_OPEN,
+        #                  ORDER_DIRECTION.BUY]:
+        #     """
+        #     冻结的保证金
+        #     """
+        #     coeff = float(price) * float(
+        #         self.market_preset.get_code(code).get("unit_table",
+        #                                               1)
+        #     ) * float(self.market_preset.get_code(code).get("buy_frozen_coeff",
+        #                                                     1))
+        #     moneyneed = coeff * amount
+        #     if self.available > moneyneed:
+        #         self.money -= moneyneed
+        #         self.frozen[order_id] = {
+        #             'amount': amount,
+        #             'coeff': coeff,
+        #             'money': moneyneed
+        #         }
+        #         res = True
+        #     else:
+        #         self.log("开仓保证金不足 TOWARDS{} Need{} HAVE{}".format(
+        #             towards, moneyneed, self.available))
+        # self.order_rule()
         return res
 
     def send_order(self, code: str, amount: float, price: float, towards: int, order_id: str = '', datetime: str = ''):
