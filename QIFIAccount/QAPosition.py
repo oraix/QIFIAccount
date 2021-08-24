@@ -422,6 +422,7 @@ class QA_Position():
 
     def order_check(self, amount: int, price: float, towards: int, order_id: str) -> bool:
         res = False
+        print('order check', amount, price,towards)
         if towards == ORDER_DIRECTION.BUY_CLOSE:
             # print('buyclose')
             #print(self.volume_short - self.volume_short_frozen)
@@ -462,13 +463,11 @@ class QA_Position():
             only for stock
             """
             if (self.volume_long_his - self.volume_long_frozen_today) >= amount:
-                # print('sellclosetoday')
-                #print(self.volume_long_today - self.volume_long_frozen)
-                # print(amount)
+
                 self.volume_long_frozen_today += amount
                 return True
             else:
-                print('SELLCLOSETODAY 今日仓位不足')
+                print('SELLCLOSE 今日仓位不足')
         elif towards in [ORDER_DIRECTION.BUY_OPEN,
                          ORDER_DIRECTION.SELL_OPEN,
                          ORDER_DIRECTION.BUY]:
