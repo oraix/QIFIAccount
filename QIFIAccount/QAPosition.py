@@ -262,6 +262,7 @@ class QA_Position():
         self.margin_short = diff_slice['margin_short']
         self.exchange_id = diff_slice['exchange_id']
         self.market_type = MARKET_TYPE.FUTURE_CN
+        self.last_price = diff_slice['last_price']
         return self
 
     @property
@@ -380,7 +381,8 @@ class QA_Position():
             'open_cost_short': self.open_cost_short,  # 空头成本
             # 历史字段
             'trades': self.trades,
-            'orders': self.orders
+            'orders': self.orders,
+            #'last_price': self.last_price
         }
 
     @property
@@ -437,10 +439,8 @@ class QA_Position():
                 res = True
             else:
                 print('BUYCLOSETODAY 今日仓位不足')
-        elif towards == ORDER_DIRECTION.SELL_CLOSE:
-            # print('sellclose')
-            #print(self.volume_long - self.volume_long_frozen)
-            # print(amount)
+        elif towards in ORDER_DIRECTION.SELL_CLOSE:
+
             if (self.volume_long - self.volume_long_frozen) >= amount:
                 self.volume_long_frozen_today += amount
                 res = True
@@ -449,6 +449,19 @@ class QA_Position():
 
         elif towards == ORDER_DIRECTION.SELL_CLOSETODAY:
             if (self.volume_long_today - self.volume_long_frozen_today) >= amount:
+                # print('sellclosetoday')
+                #print(self.volume_long_today - self.volume_long_frozen)
+                # print(amount)
+                self.volume_long_frozen_today += amount
+                return True
+            else:
+                print('SELLCLOSETODAY 今日仓位不足')
+        elif towards == ORDER_DIRECTION.SELL:
+
+            """
+            only for stock
+            """
+            if (self.volume_long_his - self.volume_long_frozen_today) >= amount:
                 # print('sellclosetoday')
                 #print(self.volume_long_today - self.volume_long_frozen)
                 # print(amount)
@@ -853,15 +866,19 @@ class QA_Position():
                 exchange_id=message['exchange_id'],
                 trades=message['trades'],
                 orders=message['orders'],
+                
                 # commission=message['commission'],
                 name=message['name'])
         except:
             self.read_diff(message)
-        if self.volume_long + self.volume_short > 0:
-            self.last_price = (self.open_price_long*self.volume_long + self.open_price_short *
-                               self.volume_short)/(self.volume_long + self.volume_short)
+        if 'last_price' in message.keys():
+            self.last_price = message['last_price']
         else:
-            self.last_price = 0
+            if self.volume_long + self.volume_short > 0:
+                self.last_price = (self.open_price_long*self.volume_long + self.open_price_short *
+                                self.volume_short)/(self.volume_long + self.volume_short)
+            else:
+                self.last_price = 0
 
         return self
 
