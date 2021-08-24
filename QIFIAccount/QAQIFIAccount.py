@@ -578,7 +578,7 @@ class QIFI_Account():
                 res = True
             else:
                 self.log("BUYCLOSETODAY 今日仓位不足")
-        elif towards in [ORDER_DIRECTION.SELL_CLOSE, ORDER_DIRECTION.SELL]:
+        elif towards in [ORDER_DIRECTION.SELL_CLOSE]:
             # self.log("sellclose")
             # self.log(self.volume_long - self.volume_long_frozen)
             # self.log(amount)
