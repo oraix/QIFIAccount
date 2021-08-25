@@ -51,6 +51,8 @@ def test_acc():
 
     assert(myacc.positions['stock_cn.000001'].volume_long == 100)
 
+    assert(myacc.positions['stock_cn.000001'].volume_long_today == 100)
+
     assert(list(myacc.frozen.values()) == [{'amount': 0,
                                             'coeff': 12.0,
                                             'money': 0}])
