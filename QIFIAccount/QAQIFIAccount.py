@@ -513,7 +513,7 @@ class QIFI_Account():
                 times) == 19 else datetime.datetime.strptime(times.replace('_', '.'), '%Y-%m-%d %H:%M:%S.%f')
             return bson.int64.Int64(tradedt.timestamp()*1000000000)
         elif isinstance(times, datetime.datetime):
-            return bson.int64.Int64(tradedt.timestamp()*1000000000)
+            return bson.int64.Int64(times.timestamp()*1000000000)
 
 
 # 惰性计算
