@@ -569,11 +569,25 @@ class QA_Position():
             if self.volume_long_his >= amount:
                 # volime_long --> count in sendorder model
                 # and self.volume_long>=amount:
+                """
+                此时需要卖出的amount 已经存在于 volume_long_frozen_today 中
+
+                因此 此时的volume_long 是 可用部分的volume_long 而非全部状态的
+
+
+                成交为:
+                    volume_long_frozen_today - amount   [冻结注销]
+                    volume_long_his   -    amount       [成交扣除]
+
+
+                
+                """
+
                 if self.volume_long > 0:
                     self.position_cost_long = self.position_cost_long * \
-                        (self.volume_long - amount)/self.volume_long
+                        (self.volume_long )/(self.volume_long+amount)
                     self.open_cost_long = self.open_cost_long * \
-                        (self.volume_long-amount)/self.volume_long
+                        (self.volume_long)/(self.volume_long+amount)
 
                     self.volume_long_his -= amount
                     self.volume_long_frozen_today -= amount
