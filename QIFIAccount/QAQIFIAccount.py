@@ -6,7 +6,7 @@ from qaenv import mongo_ip
 import bson
 import pandas as pd
 from QIFIAccount.QAPosition import QA_Position
-from QUANTAXIS.QAARP.market_preset import MARKET_PRESET
+from QUANTAXIS.QAMarket.market_preset import MARKET_PRESET
 
 
 class ORDER_DIRECTION():
