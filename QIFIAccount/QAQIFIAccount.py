@@ -94,7 +94,7 @@ class QIFI_Account():
             self.db = pymongo.MongoClient(trade_host).QAREALTIME
 
         self.pub_host = ""
-        self.trade_host = ""
+        # self.trade_host = ""
         self.last_updatetime = ""
         self.status = 200
         self._trading_day = ""
