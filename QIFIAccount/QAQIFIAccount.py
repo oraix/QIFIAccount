@@ -665,7 +665,7 @@ class QIFI_Account():
                 "time_condition": "GFD",
                 "volume_condition": "ANY",
                 "insert_date_time": self.transform_dt(self.dtstr),
-                'order_time': self.dtstr,
+                # 'order_time': self.dtstr,
                 "exchange_order_id": str(uuid.uuid4()),
                 "status": "ALIVE",
                 "volume_left": int(amount),
